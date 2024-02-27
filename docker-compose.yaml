@@ -1,0 +1,22 @@
+﻿version: '3.9'
+networks:
+  deploy-guide-dev:
+    driver: bridge
+services:
+  app:
+    container_name: deploy
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8000:80"  # Оставляем HTTP порт
+      - "8001:443"  # Изменяем порт на 443 для HTTPS
+    networks: 
+      - deploy-guide-dev
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=https://+:443;http://+:80
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=123
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
+    volumes:
+      - ~/.aspnet/https:/https:ro  # Монтируем директорию с сертификатами в контейнер
