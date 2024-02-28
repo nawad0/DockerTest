@@ -1,11 +1,12 @@
 using DockerTest.Data;
 using DockerTest.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace DockerTest.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("test")]
     public class WeatherForecastController : ControllerBase
     {
         private static readonly string[] Summaries = new[]
@@ -21,9 +22,9 @@ namespace DockerTest.Controllers
             _context = context;
         }
 
-        
-       [HttpGet]
-        public async Task<ActionResult<IEnumerable<Test>>> GetComments()
+
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<Test>>> Get()
         {
             if (_context.Tests == null)
             {

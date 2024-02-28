@@ -1,5 +1,7 @@
 ﻿using DockerTest.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Storage;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,13 +13,24 @@ namespace DockerTest.Data
 
     public class ApplicationDbContext : DbContext
     {
-        
 
-        public ApplicationDbContext(DbContextOptions options) : base(options)
+        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> dbContextOptions) : base(dbContextOptions)
         {
-
+            try
+            {
+                var databaseCreator = Database.GetService<IDatabaseCreator>() as RelationalDatabaseCreator;
+                if (databaseCreator != null)
+                {
+                    if (!databaseCreator.CanConnect()) databaseCreator.Create();
+                    if (!databaseCreator.HasTables()) databaseCreator.CreateTables();
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
         }
-        DbSet<Test> Tests;
+        public DbSet<Test> Tests { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
 
@@ -33,5 +46,5 @@ namespace DockerTest.Data
         }
 
 
-        }
+    }
 }
